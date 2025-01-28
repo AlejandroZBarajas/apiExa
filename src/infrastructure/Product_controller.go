@@ -1,0 +1,129 @@
+package infrastructure
+
+import (
+	"ArquitecturaExagonal/src/application"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strconv"
+)
+
+type ProductController struct {
+	CreateUseCase *application.CreateProduct
+	GetAllUseCase *application.GetAllProducts
+	UpdateUseCase *application.UpdateProduct
+	DeleteUseCase *application.DeleteProduct
+}
+
+func NewProductController(
+	create *application.CreateProduct,
+	getAll *application.GetAllProducts,
+	update *application.UpdateProduct,
+	delete *application.DeleteProduct,
+) *ProductController {
+	return &ProductController{
+		CreateUseCase: create,
+		GetAllUseCase: getAll,
+		UpdateUseCase: update,
+		DeleteUseCase: delete,
+	}
+}
+
+func (pc *ProductController) CreateNewHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var ProductInput struct {
+		Name  string  `json:"name`
+		Price float32 `json:"price`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&ProductInput)
+	if err != nil {
+
+		http.Error(w, fmt.Sprintf("error al leer datos: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	err = pc.CreateUseCase.Run(ProductInput.Name, ProductInput.Price)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error al crear el producto : %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("producto creado exitosamente"))
+}
+
+func (pc *ProductController) GetAllHandler(w http.ResponseWriter, r http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	products, err := pc.GetAllUseCase.Run()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error al obtener productos: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "Application/json")
+	json.NewEncoder(w).Encode(products)
+}
+
+func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r http.Request) {
+	if r.Method != http.MethodPut {
+		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var productInput struct {
+		Name  string `json:"name"`
+		Price string `json:"price"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&productInput)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error : %v", err), http.StatusBadRequest)
+		return
+	}
+
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID invalido", http.StatusBadRequest)
+		return
+	}
+
+	err = pc.CreateUseCase.Run(int32(id), productInput.Name, productInput.Price)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Producto actualizado"))
+}
+
+func (pc *ProductController) DeleteHandler(w http.ResponseWriter, r http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID invalido", http.StatusBadRequest)
+		return
+	}
+
+	err = pc.DeleteUseCase.Run(int32(id))
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error al eliminar el producto: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Producto eliminado correctamente"))
+}

@@ -10,7 +10,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type Connection struct {
+	DB *sql.DB
+}
+
 var db *sql.DB
+var err error
 
 func loadEnv() {
 	err := godotenv.Load(".env")
@@ -34,8 +39,6 @@ func ConnectDB() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 
-	var err error
-
 	db, err = sql.Open("mysql", dsn)
 
 	if err != nil {
@@ -48,9 +51,32 @@ func ConnectDB() {
 	}
 
 	fmt.Println("Conexión exitosa")
+	//return &Connection{DB: db}
 
 }
 
 func GetDB() *sql.DB {
 	return db
+}
+
+func (c *Connection) RunQuery(query string, values ...interface{}) (sql.Result, error) {
+	stmt, err := c.DB.Prepare(query)
+	if err != nil {
+		return nil, fmt.Errorf("error %w", err)
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(values...)
+	if err != nil {
+		return nil, fmt.Errorf("error: %w", err)
+	}
+	return result, nil
+}
+
+func (c *Connection) GetDBData(query string, values ...interface{}) (*sql.Rows, error) {
+	rows, err := c.DB.Query(query, values...)
+	if err != nil {
+		fmt.Errorf("error: %w", err)
+	}
+	return rows, nil
 }

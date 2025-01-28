@@ -1,11 +1,14 @@
 package main
 
 import (
+	"ArquitecturaExagonal/src/application"
 	"ArquitecturaExagonal/src/infrastructure"
-	"fmt"
 )
 
 func main() {
-	fmt.Println("hola")
 	infrastructure.ConnectDB()
+	db := infrastructure.GetDB()                           //jala la db
+	productRepo := infrastructure.NewProductRepository(db) //nuevo repo
+
+	createUseCase := application.NewProductCreation(productRepo)
 }
