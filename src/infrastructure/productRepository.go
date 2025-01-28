@@ -53,3 +53,19 @@ func (repo *ProductRepository) Delete(id int32) error {
 	_, err := repo.db.Exec(query, id)
 	return err
 }
+
+func (pr *ProductRepository) GetByID(id int32) (*entities.Product, error) {
+	query := "SELECT id, name, price FROM products WHERE id = ?"
+	row := pr.db.QueryRow(query, id)
+
+	var product entities.Product
+	err := row.Scan(&product.Id, &product.Name, &product.Price)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("producto con id %d no encontrado", id)
+		}
+		return nil, err
+	}
+
+	return &product, nil
+}
