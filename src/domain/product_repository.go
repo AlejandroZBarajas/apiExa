@@ -7,7 +7,9 @@ type ProductInterface interface {
 
 	GetAll() ([]*entities.Product, error)
 
-	Update(id int32, name string, price float32) error
+	Update(id int32, product *entities.Product) error
 
 	Delete(id int32) error
+
+	GetByID(id int32) (*entities.Product, error)
 }

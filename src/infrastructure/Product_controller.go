@@ -57,7 +57,7 @@ func (pc *ProductController) CreateNewHandler(w http.ResponseWriter, r *http.Req
 	w.Write([]byte("producto creado exitosamente"))
 }
 
-func (pc *ProductController) GetAllHandler(w http.ResponseWriter, r http.Request) {
+func (pc *ProductController) GetAllHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
 		return
@@ -73,7 +73,7 @@ func (pc *ProductController) GetAllHandler(w http.ResponseWriter, r http.Request
 	json.NewEncoder(w).Encode(products)
 }
 
-func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r http.Request) {
+func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
 		return
@@ -97,7 +97,7 @@ func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r http.Request
 		return
 	}
 
-	err = pc.CreateUseCase.Run(int32(id), productInput.Name, productInput.Price)
+	err = pc.UpdateUseCase.Run(int32(id), productInput.Name, productInput.Price)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
 		return
@@ -107,7 +107,7 @@ func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r http.Request
 	w.Write([]byte("Producto actualizado"))
 }
 
-func (pc *ProductController) DeleteHandler(w http.ResponseWriter, r http.Request) {
+func (pc *ProductController) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
 		return
