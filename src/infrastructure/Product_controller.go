@@ -97,7 +97,13 @@ func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = pc.UpdateUseCase.Run(int32(id), productInput.Name, productInput.Price)
+	price, err := strconv.ParseFloat(productInput.Price, 32)
+	if err != nil {
+		http.Error(w, "Precio invalido", http.StatusBadRequest)
+		return
+	}
+
+	err = pc.UpdateUseCase.Run(int32(id), productInput.Name, float32(price))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
 		return
