@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 type ProductController struct {
@@ -36,8 +35,9 @@ func (pc *ProductController) CreateNewHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	var ProductInput struct {
-		Name  string  `json:"name`
-		Price float32 `json:"price`
+		//Id    int32   `json:"id"`
+		Name  string  `json:"name"`
+		Price float32 `json:"price"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&ProductInput)
@@ -80,8 +80,9 @@ func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	var productInput struct {
-		Name  string `json:"name"`
-		Price string `json:"price"`
+		Id    int32   `json:"id"`
+		Name  string  `json:"name"`
+		Price float32 `json:"price"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&productInput)
@@ -90,24 +91,34 @@ func (pc *ProductController) UpdateHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	idStr := r.URL.Query().Get("id")
+	/* idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "ID invalido", http.StatusBadRequest)
 		return
+	} */
+
+	if productInput.Id <= 0 {
+		http.Error(w, "ID invalido", http.StatusBadRequest)
+		return
 	}
 
-	price, err := strconv.ParseFloat(productInput.Price, 32)
+	/* price, err := strconv.ParseFloat(productInput.Price, 32)
 	if err != nil {
 		http.Error(w, "Precio invalido", http.StatusBadRequest)
 		return
+	} */
+	err = pc.UpdateUseCase.Run(productInput.Id, productInput.Name, productInput.Price)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error al actualizar: %v", err), http.StatusInternalServerError)
+		return
 	}
 
-	err = pc.UpdateUseCase.Run(int32(id), productInput.Name, float32(price))
+	/* err = pc.UpdateUseCase.Run(int32(id), productInput.Name, float32(price))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
 		return
-	}
+	} */
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Producto actualizado"))
@@ -118,18 +129,40 @@ func (pc *ProductController) DeleteHandler(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "metodo no permitido", http.StatusMethodNotAllowed)
 		return
 	}
-	idStr := r.URL.Query().Get("id")
-	id, err := strconv.Atoi(idStr)
+
+	var productInput struct {
+		ID int32 `json:"id"` // Recibe ID desde el body en JSON
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&productInput)
 	if err != nil {
+		http.Error(w, fmt.Sprintf("Error al leer JSON: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	if productInput.ID <= 0 {
 		http.Error(w, "ID invalido", http.StatusBadRequest)
 		return
 	}
 
-	err = pc.DeleteUseCase.Run(int32(id))
+	err = pc.DeleteUseCase.Run(productInput.ID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error al eliminar el producto: %v", err), http.StatusInternalServerError)
 		return
 	}
+	/*
+		idStr := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			http.Error(w, "ID invalido", http.StatusBadRequest)
+			return
+		}
+
+		err = pc.DeleteUseCase.Run(int32(id))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error al eliminar el producto: %v", err), http.StatusInternalServerError)
+			return
+		} */
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Producto eliminado correctamente"))
 }

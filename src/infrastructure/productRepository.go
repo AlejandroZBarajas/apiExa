@@ -44,7 +44,7 @@ func (repo *ProductRepository) GetAll() ([]*entities.Product, error) {
 
 func (repo *ProductRepository) Update(id int32, product *entities.Product) error {
 	query := "UPDATE products SET name = ?, price = ? WHERE id = ?"
-	_, err := repo.db.Exec(query, id)
+	_, err := repo.db.Exec(query, product.Name, product.Price, id)
 	return err
 }
 
