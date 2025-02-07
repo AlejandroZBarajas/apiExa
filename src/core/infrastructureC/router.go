@@ -1,18 +1,18 @@
-package infrastructure
+package infrastructureC
 
 import (
+	"ArquitecturaExagonal/src/products/infrastructureP"
+	"ArquitecturaExagonal/src/users/infrastructureU"
 	"net/http"
 )
 
-// Middleware para manejar CORS en todas las solicitudes
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Agregar headers CORS
+
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-		// Si la solicitud es OPTIONS, responder con 200 y terminar aquí
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
@@ -22,22 +22,19 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func SetupRoutes(pc *ProductController, uc *UserController) {
+func SetupRoutes(pc *infrastructureP.ProductController, uc *infrastructureU.UserController) {
 	mux := http.NewServeMux()
 
-	// Rutas de productos
 	mux.HandleFunc("/products", pc.CreateNewHandler)
 	mux.HandleFunc("/products/all", pc.GetAllHandler)
 	mux.HandleFunc("/products/update", pc.UpdateHandler)
 	mux.HandleFunc("/products/delete", pc.DeleteHandler)
 
-	// Rutas de usuarios
 	mux.HandleFunc("/users", uc.CreateNewHandler)
 	mux.HandleFunc("/users/all", uc.GetAllHandler)
 	mux.HandleFunc("/users/update", uc.UpdateHandler)
 	mux.HandleFunc("/users/delete", uc.DeleteHandler)
 
-	// Envolver con middleware CORS
 	http.Handle("/", corsMiddleware(mux))
 }
 

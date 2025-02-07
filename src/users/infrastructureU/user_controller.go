@@ -1,24 +1,24 @@
-package infrastructure
+package infrastructureU
 
 import (
-	application "ArquitecturaExagonal/src/application"
+	"ArquitecturaExagonal/src/users/applicationU"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
 type UserController struct {
-	CreateUseCase *application.CreateUser
-	GetAllUseCase *application.GetAllUsers
-	UpdateUseCase *application.UpdateUser
-	DeleteUseCase *application.DeleteUser
+	CreateUseCase *applicationU.CreateUser
+	GetAllUseCase *applicationU.GetAllUsers
+	UpdateUseCase *applicationU.UpdateUser
+	DeleteUseCase *applicationU.DeleteUser
 }
 
 func NewUserController(
-	create *application.CreateUser,
-	getAll *application.GetAllUsers,
-	update *application.UpdateUser,
-	delete *application.DeleteUser,
+	create *applicationU.CreateUser,
+	getAll *applicationU.GetAllUsers,
+	update *applicationU.UpdateUser,
+	delete *applicationU.DeleteUser,
 ) *UserController {
 	return &UserController{
 		CreateUseCase: create,

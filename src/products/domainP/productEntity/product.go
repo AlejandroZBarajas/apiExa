@@ -1,4 +1,4 @@
-package entities
+package productEntity
 
 type Product struct {
 	Id    int32

@@ -1,24 +1,24 @@
-package infrastructure
+package infrastructureP
 
 import (
-	"ArquitecturaExagonal/src/application"
+	"ArquitecturaExagonal/src/products/applicationP"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
 type ProductController struct {
-	CreateUseCase *application.CreateProduct
-	GetAllUseCase *application.GetAllProducts
-	UpdateUseCase *application.UpdateProduct
-	DeleteUseCase *application.DeleteProduct
+	CreateUseCase *applicationP.CreateProduct
+	GetAllUseCase *applicationP.GetAllProducts
+	UpdateUseCase *applicationP.UpdateProduct
+	DeleteUseCase *applicationP.DeleteProduct
 }
 
 func NewProductController(
-	create *application.CreateProduct,
-	getAll *application.GetAllProducts,
-	update *application.UpdateProduct,
-	delete *application.DeleteProduct,
+	create *applicationP.CreateProduct,
+	getAll *applicationP.GetAllProducts,
+	update *applicationP.UpdateProduct,
+	delete *applicationP.DeleteProduct,
 ) *ProductController {
 	return &ProductController{
 		CreateUseCase: create,
@@ -35,7 +35,6 @@ func (pc *ProductController) CreateNewHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	var ProductInput struct {
-		//Id    int32   `json:"id"`
 		Name  string  `json:"name"`
 		Price float32 `json:"price"`
 	}

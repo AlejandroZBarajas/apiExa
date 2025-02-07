@@ -1,15 +1,14 @@
-package application
+package applicationU
 
-import (
-	"ArquitecturaExagonal/src/domain"
-	//"fmt"
-)
+import "ArquitecturaExagonal/src/users/domainU"
+
+//"fmt"
 
 type UpdateUser struct {
-	repo domain.UserInterface
+	repo domainU.UserInterface
 }
 
-func NewUpdateUser(repo domain.UserInterface) *UpdateUser {
+func NewUpdateUser(repo domainU.UserInterface) *UpdateUser {
 	return &UpdateUser{repo: repo}
 }
 

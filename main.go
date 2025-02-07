@@ -1,44 +1,47 @@
 package main
 
 import (
-	"ArquitecturaExagonal/src/application"
-	"ArquitecturaExagonal/src/infrastructure"
+	"ArquitecturaExagonal/src/core/infrastructureC"
+	"ArquitecturaExagonal/src/products/applicationP"
+	"ArquitecturaExagonal/src/products/infrastructureP"
+	"ArquitecturaExagonal/src/users/applicationU"
+	"ArquitecturaExagonal/src/users/infrastructureU"
 	"fmt"
 	"log"
 	"net/http"
 )
 
 func main() {
-	infrastructure.ConnectDB()
-	db := infrastructure.GetDB()                           //jala la db
-	productRepo := infrastructure.NewProductRepository(db) //nuevo repo
-	userRepo := infrastructure.NewUserRepository(db)
+	infrastructureC.ConnectDB()
+	db := infrastructureC.GetDB()                           //jala la db
+	productRepo := infrastructureP.NewProductRepository(db) //nuevo repo
+	userRepo := infrastructureU.NewUserRepository(db)
 
-	createUseCase := application.NewProductCreation(productRepo)
-	getAllUseCase := application.NewGetAllProducts(productRepo)
-	updateUseCase := application.NewUpdateProduct(productRepo)
-	deleteUseCase := application.NewDeleteProduct(productRepo)
+	createUseCase := applicationP.NewProductCreation(productRepo)
+	getAllUseCase := applicationP.NewGetAllProducts(productRepo)
+	updateUseCase := applicationP.NewUpdateProduct(productRepo)
+	deleteUseCase := applicationP.NewDeleteProduct(productRepo)
 
-	createUserUseCase := application.NewUserCreation(userRepo)
-	getAllUserUseCase := application.NewGetAllUsers(userRepo)
-	updateUserUseCase := application.NewUpdateUser(userRepo)
-	deleteUserUseCase := application.NewDeleteUser(userRepo)
+	createUserUseCase := applicationU.NewUserCreation(userRepo)
+	getAllUserUseCase := applicationU.NewGetAllUsers(userRepo)
+	updateUserUseCase := applicationU.NewUpdateUser(userRepo)
+	deleteUserUseCase := applicationU.NewDeleteUser(userRepo)
 
-	productController := infrastructure.NewProductController(
+	productController := infrastructureP.NewProductController(
 		createUseCase,
 		getAllUseCase,
 		updateUseCase,
 		deleteUseCase,
 	)
 
-	userController := infrastructure.NewUserController(
+	userController := infrastructureU.NewUserController(
 		createUserUseCase,
 		getAllUserUseCase,
 		updateUserUseCase,
 		deleteUserUseCase,
 	)
 
-	infrastructure.SetupRoutes(productController, userController)
+	infrastructureC.SetupRoutes(productController, userController)
 
 	fmt.Println("Servidor corriendo en el puerto 8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))

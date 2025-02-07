@@ -1,14 +1,14 @@
-package application
+package applicationP
 
 import (
-	"ArquitecturaExagonal/src/domain"
+	"ArquitecturaExagonal/src/products/domainP"
 )
 
 type UpdateProduct struct {
-	repo domain.ProductInterface
+	repo domainP.ProductInterface
 }
 
-func NewUpdateProduct(repo domain.ProductInterface) *UpdateProduct {
+func NewUpdateProduct(repo domainP.ProductInterface) *UpdateProduct {
 	return &UpdateProduct{repo: repo}
 }
 

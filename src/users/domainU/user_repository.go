@@ -1,6 +1,6 @@
-package domain
+package domainU
 
-import "ArquitecturaExagonal/src/domain/entities"
+import entities "ArquitecturaExagonal/src/users/domainU/userEntity"
 
 type UserInterface interface {
 	Save(user *entities.User) error

@@ -1,7 +1,7 @@
-package infrastructure
+package infrastructureP
 
 import (
-	"ArquitecturaExagonal/src/domain/entities"
+	"ArquitecturaExagonal/src/products/domainP/productEntity"
 	"database/sql"
 	"fmt"
 )
@@ -14,7 +14,7 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{db: db}
 }
 
-func (repo *ProductRepository) Save(product *entities.Product) error {
+func (repo *ProductRepository) Save(product *productEntity.Product) error {
 	query := "INSERT INTO products (name, price) VALUES (?,?)"
 	_, err := repo.db.Exec(query, product.Name, product.Price)
 	if err != nil {
@@ -23,7 +23,7 @@ func (repo *ProductRepository) Save(product *entities.Product) error {
 	return nil
 }
 
-func (repo *ProductRepository) GetAll() ([]*entities.Product, error) {
+func (repo *ProductRepository) GetAll() ([]*productEntity.Product, error) {
 	query := "SELECT * FROM products"
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -31,9 +31,9 @@ func (repo *ProductRepository) GetAll() ([]*entities.Product, error) {
 	}
 	defer rows.Close()
 
-	var products []*entities.Product
+	var products []*productEntity.Product
 	for rows.Next() {
-		var product entities.Product
+		var product productEntity.Product
 		if err := rows.Scan(&product.Id, &product.Name, &product.Price); err != nil {
 			return nil, fmt.Errorf("Error: %w", err)
 		}
@@ -42,7 +42,7 @@ func (repo *ProductRepository) GetAll() ([]*entities.Product, error) {
 	return products, nil
 }
 
-func (repo *ProductRepository) Update(id int32, product *entities.Product) error {
+func (repo *ProductRepository) Update(id int32, product *productEntity.Product) error {
 	query := "UPDATE products SET name = ?, price = ? WHERE id = ?"
 	_, err := repo.db.Exec(query, product.Name, product.Price, id)
 	return err
@@ -54,11 +54,11 @@ func (repo *ProductRepository) Delete(id int32) error {
 	return err
 }
 
-func (pr *ProductRepository) GetByID(id int32) (*entities.Product, error) {
+func (pr *ProductRepository) GetByID(id int32) (*productEntity.Product, error) {
 	query := "SELECT id, name, price FROM products WHERE id = ?"
 	row := pr.db.QueryRow(query, id)
 
-	var product entities.Product
+	var product productEntity.Product
 	err := row.Scan(&product.Id, &product.Name, &product.Price)
 	if err != nil {
 		if err == sql.ErrNoRows {
