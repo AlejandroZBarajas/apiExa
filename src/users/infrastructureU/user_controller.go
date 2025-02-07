@@ -35,7 +35,7 @@ func (uc *UserController) CreateNewHandler(w http.ResponseWriter, r *http.Reques
 	}
 	var userInput struct {
 		Name  string `json:"name"`
-		Phone string `json:"phone_number"`
+		Phone string `json:"phone"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
@@ -76,7 +76,7 @@ func (uc *UserController) UpdateHandler(w http.ResponseWriter, r *http.Request) 
 	var userInput struct {
 		ID    int32  `json:"id"`
 		Name  string `json:"name"`
-		Phone string `json:"phone_number"`
+		Phone string `json:"phone"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {

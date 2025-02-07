@@ -15,7 +15,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (repo *UserRepository) Save(user *userEntity.User) error {
-	query := "INSERT INTO users (name, phone_number) VALUES (?, ?)"
+	query := "INSERT INTO users (name, phone) VALUES (?, ?)"
 	fmt.Printf("Guardando en DB: Name=%s, Phone=%s\n", user.Name, user.Phone)
 	_, err := repo.db.Exec(query, user.Name, user.Phone)
 	if err != nil {
@@ -43,7 +43,7 @@ func (repo *UserRepository) GetAll() ([]*userEntity.User, error) {
 }
 
 func (repo *UserRepository) Update(id int32, user *userEntity.User) error {
-	query := "UPDATE users SET name = ?, phone_number = ? WHERE id = ?"
+	query := "UPDATE users SET name = ?, phone = ? WHERE id = ?"
 	_, err := repo.db.Exec(query, user.Name, user.Phone, id)
 	return err
 }
