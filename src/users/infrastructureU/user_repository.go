@@ -16,7 +16,8 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 
 func (repo *UserRepository) Save(user *userEntity.User) error {
 	query := "INSERT INTO users (name, phone_number) VALUES (?, ?)"
-	_, err := repo.db.Exec(query, user.Name, user.PhoneNumber)
+	fmt.Printf("Guardando en DB: Name=%s, Phone=%s\n", user.Name, user.Phone)
+	_, err := repo.db.Exec(query, user.Name, user.Phone)
 	if err != nil {
 		return fmt.Errorf("Error: %w", err)
 	}
@@ -33,7 +34,7 @@ func (repo *UserRepository) GetAll() ([]*userEntity.User, error) {
 	var users []*userEntity.User
 	for rows.Next() {
 		var user userEntity.User
-		if err := rows.Scan(&user.Id, &user.Name, &user.PhoneNumber); err != nil {
+		if err := rows.Scan(&user.ID, &user.Name, &user.Phone); err != nil {
 			return nil, fmt.Errorf("Error: %w", err)
 		}
 		users = append(users, &user)
@@ -43,13 +44,7 @@ func (repo *UserRepository) GetAll() ([]*userEntity.User, error) {
 
 func (repo *UserRepository) Update(id int32, user *userEntity.User) error {
 	query := "UPDATE users SET name = ?, phone_number = ? WHERE id = ?"
-	_, err := repo.db.Exec(query, user.Name, user.PhoneNumber, id)
-	return err
-}
-
-func (repo *UserRepository) Delete(id int32) error {
-	query := "DELETE FROM users WHERE id = ?"
-	_, err := repo.db.Exec(query, id)
+	_, err := repo.db.Exec(query, user.Name, user.Phone, id)
 	return err
 }
 
@@ -57,9 +52,15 @@ func (repo *UserRepository) GetByID(id int32) (*userEntity.User, error) {
 	query := "SELECT * FROM users WHERE id = ?"
 	row := repo.db.QueryRow(query, id)
 	var user userEntity.User
-	err := row.Scan(&user.Id, &user.Name, &user.PhoneNumber)
+	err := row.Scan(&user.ID, &user.Name, &user.Phone)
 	if err != nil {
 		return nil, fmt.Errorf("Error: %w", err)
 	}
 	return &user, nil
+}
+
+func (repo *UserRepository) Delete(id int32) error {
+	query := "DELETE FROM users WHERE id = ?"
+	_, err := repo.db.Exec(query, id)
+	return err
 }

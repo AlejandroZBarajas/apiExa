@@ -34,15 +34,18 @@ func (uc *UserController) CreateNewHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	var userInput struct {
-		Name        string `json:"name"`
-		PhoneNumber string `json:"phone_number"`
+		Name  string `json:"name"`
+		Phone string `json:"phone_number"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error al leer datos: %v", err), http.StatusBadRequest)
 		return
 	}
-	err = uc.CreateUseCase.Run(userInput.Name, userInput.PhoneNumber)
+
+	fmt.Printf("Datos recibidos: %+v\n", userInput)
+
+	err = uc.CreateUseCase.Run(userInput.Name, userInput.Phone)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error al crear el usuario: %v", err), http.StatusInternalServerError)
 		return
@@ -71,16 +74,16 @@ func (uc *UserController) UpdateHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	var userInput struct {
-		Id          int32  `json:"id"`
-		Name        string `json:"name"`
-		PhoneNumber string `json:"phone_number"`
+		ID    int32  `json:"id"`
+		Name  string `json:"name"`
+		Phone string `json:"phone_number"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
 		return
 	}
-	err = uc.UpdateUseCase.Run(userInput.Id, userInput.Name, userInput.PhoneNumber)
+	err = uc.UpdateUseCase.Run(userInput.ID, userInput.Name, userInput.Phone)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error al actualizar: %v", err), http.StatusInternalServerError)
 		return
