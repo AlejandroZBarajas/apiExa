@@ -34,6 +34,7 @@ func SetupRoutes(pc *infrastructureP.ProductController, uc *infrastructureU.User
 	mux.HandleFunc("/users/all", uc.GetAllHandler)
 	mux.HandleFunc("/users/update", uc.UpdateHandler)
 	mux.HandleFunc("/users/delete", uc.DeleteHandler)
+	mux.HandleFunc("/users/name", uc.GetByNameHandler)
 
 	http.Handle("/", corsMiddleware(mux))
 }

@@ -12,6 +12,7 @@ type UserController struct {
 	GetAllUseCase *applicationU.GetAllUsers
 	UpdateUseCase *applicationU.UpdateUser
 	DeleteUseCase *applicationU.DeleteUser
+	GetByNameCase *applicationU.GetByName
 }
 
 func NewUserController(
@@ -19,12 +20,14 @@ func NewUserController(
 	getAll *applicationU.GetAllUsers,
 	update *applicationU.UpdateUser,
 	delete *applicationU.DeleteUser,
+	getByName *applicationU.GetByName,
 ) *UserController {
 	return &UserController{
 		CreateUseCase: create,
 		GetAllUseCase: getAll,
 		UpdateUseCase: update,
 		DeleteUseCase: delete,
+		GetByNameCase: getByName,
 	}
 }
 
@@ -112,4 +115,30 @@ func (uc *UserController) DeleteHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Usuario eliminado correctamente"))
+}
+
+func (uc *UserController) GetByNameHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método no permitido", http.StatusBadRequest)
+		return
+	}
+
+	var userInput struct {
+		Name string `json:"name"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&userInput)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error al leer json: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	user, err := uc.GetByNameCase.Run(userInput.Name)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error al obtener usuario: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(user)
 }

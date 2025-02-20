@@ -64,3 +64,14 @@ func (repo *UserRepository) Delete(id int32) error {
 	_, err := repo.db.Exec(query, id)
 	return err
 }
+
+func (repo *UserRepository) GetByName(name string) (*userEntity.User, error) {
+	query := "SELECT * FROM users WHERE name = ?"
+	row := repo.db.QueryRow(query, name)
+	var user userEntity.User
+	err := row.Scan(&user.ID, &user.Name, &user.Phone)
+	if err != nil {
+		return nil, fmt.Errorf("Error: %v", err)
+	}
+	return &user, nil
+}

@@ -26,6 +26,7 @@ func main() {
 	getAllUserUseCase := applicationU.NewGetAllUsers(userRepo)
 	updateUserUseCase := applicationU.NewUpdateUser(userRepo)
 	deleteUserUseCase := applicationU.NewDeleteUser(userRepo)
+	getByNameUseCase := applicationU.NewGetByName(userRepo)
 
 	productController := infrastructureP.NewProductController(
 		createUseCase,
@@ -39,6 +40,7 @@ func main() {
 		getAllUserUseCase,
 		updateUserUseCase,
 		deleteUserUseCase,
+		getByNameUseCase,
 	)
 
 	infrastructureC.SetupRoutes(productController, userController)
