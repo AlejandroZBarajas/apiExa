@@ -19,7 +19,7 @@ func (repo *UserRepository) Save(user *userEntity.User) error {
 	fmt.Printf("Guardando en DB: Name=%s, Phone=%s\n", user.Name, user.Phone)
 	_, err := repo.db.Exec(query, user.Name, user.Phone)
 	if err != nil {
-		return fmt.Errorf("Error: %w", err)
+		return fmt.Errorf("error: %w", err)
 	}
 	return nil
 }
@@ -28,14 +28,14 @@ func (repo *UserRepository) GetAll() ([]*userEntity.User, error) {
 	query := "SELECT * FROM users"
 	rows, err := repo.db.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("Error: %w", err)
+		return nil, fmt.Errorf("error: %w", err)
 	}
 	defer rows.Close()
 	var users []*userEntity.User
 	for rows.Next() {
 		var user userEntity.User
 		if err := rows.Scan(&user.ID, &user.Name, &user.Phone); err != nil {
-			return nil, fmt.Errorf("Error: %w", err)
+			return nil, fmt.Errorf("error: %w", err)
 		}
 		users = append(users, &user)
 	}
@@ -54,7 +54,7 @@ func (repo *UserRepository) GetByID(id int32) (*userEntity.User, error) {
 	var user userEntity.User
 	err := row.Scan(&user.ID, &user.Name, &user.Phone)
 	if err != nil {
-		return nil, fmt.Errorf("Error: %w", err)
+		return nil, fmt.Errorf("error: %w", err)
 	}
 	return &user, nil
 }
@@ -71,7 +71,7 @@ func (repo *UserRepository) GetByName(name string) (*userEntity.User, error) {
 	var user userEntity.User
 	err := row.Scan(&user.ID, &user.Name, &user.Phone)
 	if err != nil {
-		return nil, fmt.Errorf("Error: %v", err)
+		return nil, fmt.Errorf("error: %v", err)
 	}
 	return &user, nil
 }

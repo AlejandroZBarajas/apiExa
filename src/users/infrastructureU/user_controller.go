@@ -54,7 +54,7 @@ func (uc *UserController) CreateNewHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Usuario creado exitosamente"))
+	w.Write([]byte(fmt.Sprintf("Usuario '%s' creado exitosamente, con numero de telefono: '%s'", userInput.Name, userInput.Phone)))
 }
 
 func (uc *UserController) GetAllHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +92,8 @@ func (uc *UserController) UpdateHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Usuario actualizado"))
+	msg := fmt.Sprintf("Usuario actualizado con nombre: '%s' y telefono '%s'", userInput.Name, userInput.Phone)
+	w.Write([]byte(msg))
 }
 
 func (uc *UserController) DeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +115,8 @@ func (uc *UserController) DeleteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Usuario eliminado correctamente"))
+	msg := fmt.Sprintf("Usuario con id:'%d' eliminado correctamente", userInput.ID)
+	w.Write([]byte(msg))
 }
 
 func (uc *UserController) GetByNameHandler(w http.ResponseWriter, r *http.Request) {
